@@ -3,25 +3,28 @@ dataset[dataset == ""] <- NA #replace all "" with NA
 install.packages("dplyr")
 library(dplyr)
 
+head(dataset)
+tail(dataset)
+str(dataset)
 summary(dataset)
 vars<-select(dataset,Age,Gender,BloodPressure,Cholesterol,Heart_Rate,QuantumPatternFeature,)
 summary(vars)
 
+
 is.na(dataset)
 colSums(is.na(dataset))
-missingValue<-colSums(is.na(dataset))
+missingVal<-colSums(is.na(dataset))
 sum(is.na(dataset))
 which(is.na(dataset$Age))
 which(is.na(dataset$Gender))
 which(is.na(dataset$BloodPressure))
-which(is.na(dataset$Cholesterol))
 which(is.na(dataset$Heart_Rate))
-which(is.na(dataset$QuantumPatternFeature))
 which(is.na(dataset$HeartDisease))
-barplot(missingValue,main = "Missing Values per Column",
+barplot(missingVal,main = "Missing Values per Column",
         col = "red", las = 2)
 
 noMissing<-na.omit(dataset)
+ #noMissing %>% summarise_if(is.numeric, sd)
 colSums(is.na(noMissing))
 
 meanData<-dataset
@@ -32,12 +35,22 @@ medianData<-dataset
 medianValAge<- round(median(medianData$Age, na.rm = TRUE))
 medianData$Age[is.na(medianData$Age)] <- medianValAge
 
+
 modeData<-dataset
-modeValAge <- as.numeric(names(sort(table(modeData$Age), decreasing = TRUE))[1])
+modeValAge <- as.numeric(names(which.max(table(modeData$Age))))
 modeData$Age[is.na(modeData$Age)] <- modeValAge
 
-modeValGender <- as.numeric(names(sort(table(modeData$Gender), decreasing = TRUE))[1])
+modeValGender <- as.numeric(names(which.max(table(dataset$Gender))))
 modeData$Gender[is.na(modeData$Gender)] <- modeValGender
+
+dataset<-modeData
+dataset$BloodPressure <- as.numeric(gsub("[^0-9]", "", dataset$BloodPressure))
+meanValBP <- round(mean(dataset$BloodPressure, na.rm = TRUE))
+dataset$BloodPressure[is.na(dataset$BloodPressure)] <- meanValBP
+
+modeValHR <-names(which.max(table(dataset$Heart_Rate)))
+dataset$Heart_Rate[is.na(dataset$Heart_Rate)] <- modeValHR
+colSums(is.na(dataset))
 
 
 
